@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title> 2D Breakout </title>
+  <style>
+    *{padding: 0; margin: 0;}
+    canvas {background: #eee; display: block; margin: 0 auto;}
+  </style>
+</head>
+
+<body>
+
+<canvas id="myCanvas" width="1366" height="768"></canvas>
+
+<script>
+  var canvas = document.getElementById("myCanvas");
+  var can = canvas.getContext("2d");
+  var x = canvas.width/2;
+  var y = canvas.height-30;
+  var dx = 3;
+  var dy = -3;
+  var ballRadius = 15;
+  var ballColor = "#0095DD"
+  var paddleHeight = 15;
+  var paddleWidth = 125;
+  var paddleX = (canvas.width-paddleWidth)/2;
+  var moveLeft = false;
+  var moveRight = false;
+
+  function drawBall() {
+    can.beginPath();
+    can.arc(x,y,ballRadius,0,Math.PI*2);
+    can.fillStyle = ballColor;
+    can.fill();
+    can.closePath();
+  }
+
+  function drawPaddle() {
+    can.beginPath();
+    can.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+    can.fillStyle = ballColor;
+    can.fill();
+    can.closePath();
+
+  }
+
+  function draw() {
+    can.clearRect(0,0,canvas.width,canvas.height);
+    drawBall();
+    drawPaddle();
+    if(y + dy < ballRadius) {
+      dy = -dy;
+      ballColor = "#3bb9ff";
+    }
+    if (y + dy > canvas.height - ballRadius) {
+      dy = -dy;
+      ballColor = "#EE82EE"
+    }
+    if(x + dx > canvas.width - ballRadius) {
+      dx = -dx;
+      ballColor = "#5ffdab"
+    }
+    if (x + dx < ballRadius) {
+      dx = -dx;
+      ballColor = "#FA8072"
+    }
+    x += dx;
+    y += dy;
+    if (moveRight && paddleX < canvas.width-paddleWidth) {
+      paddleX += 10;
+    } else if (moveLeft && paddleX > 0) {
+      paddleX -= 10;
+    }
+  }
+
+  document.addEventListener("keydown", keyDownHandler, false);
+  document.addEventListener("keyup", keyUpHandler, false);
+
+  function keyUpHandler(e) {
+    if (e.keyCode == 39) {
+      moveRight = false;
+    } else if (e.keyCode == 37) {
+      moveLeft = false;
+    }
+  }
+
+  function keyDownHandler(e) {
+    if (e.keyCode == 39) {
+      moveRight = true;
+    } else if (e.keyCode == 37) {
+      moveLeft = true;
+    }
+  }
+  setInterval(draw, 10);
+</script>
+
+</body>
+</html>
