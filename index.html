@@ -27,6 +27,20 @@
   var paddleX = (canvas.width-paddleWidth)/2;
   var moveLeft = false;
   var moveRight = false;
+  var brickRow = 5;
+  var brickColumn = 8;
+  var brickWidth = 100;
+  var brickHeight = 30;
+  var brickPad = 10;
+  var brickOffTop = 75;
+  var brickOffLeft = 250;
+  var bricks = [];
+  for (var i = 0; i < brickColumn; i++) {
+    bricks[i] = [];
+    for (var j = 0; j < brickRow; j++) {
+      bricks[i][j] = {x:0, y:0, status:1}
+    }
+  }
 
   function drawBall() {
     can.beginPath();
@@ -45,17 +59,55 @@
 
   }
 
+  function drawBricks() {
+    for (var i = 0; i < brickColumn; i++) {
+      for (var j = 0; j < brickRow; j++) {
+        if (bricks[i][j].status == 1) {
+          var brickX = (i*(brickWidth+brickPad))+brickOffLeft;
+          var brickY = (j*(brickHeight+brickPad))+brickOffTop;
+          bricks[i][j].x = brickX;
+          bricks[i][j].y = brickY;
+          can.beginPath();
+          can.rect(brickX, brickY, brickWidth, brickHeight);
+          can.fillStyle = ballColor;
+          can.fill();
+          can.closePath();
+        }
+      }
+    }
+  }
+
+  function collision() {
+    for (var i = 0; i < brickColumn; i++) {
+      for (var j = 0; j < brickRow; j++) {
+        var b = bricks[i][j];
+        if (b.status == 1) {
+          if (x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+            dy = -dy;
+            b.status = 0;
+          }
+        }
+      }
+    }
+  }
+
   function draw() {
     can.clearRect(0,0,canvas.width,canvas.height);
     drawBall();
     drawPaddle();
+    drawBricks();
+    collision();
     if(y + dy < ballRadius) {
       dy = -dy;
       ballColor = "#3bb9ff";
-    }
-    if (y + dy > canvas.height - ballRadius) {
-      dy = -dy;
+    } else if (y + dy > canvas.height - ballRadius) {
+      if (x > paddleX && x < paddleX + paddleWidth) {
+        dy = -1.1*dy;
+      } else {
+      alert("Game Over, GG");
+      document.location.reload();
       ballColor = "#EE82EE"
+      }
     }
     if(x + dx > canvas.width - ballRadius) {
       dx = -dx;
